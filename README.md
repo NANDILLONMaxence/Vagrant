@@ -1,9 +1,9 @@
-```markdown
+
 ## Bienvenue dans le Repository Vagrant Multiplateforme
 
 En tant qu'étudiant en BTS SIO, je suis souvent confronté à la mise en place de nombreuses solutions informatiques, que ce soit pour du développement ou la configuration de services réseau. Dans ma quête de méthodes rapides pour réaliser mes TP, j'ai découvert Vagrant. Cet outil permet de déployer rapidement des machines virtuelles, que ce soit avec Ubuntu, Debian, ou d'autres systèmes d'exploitation Linux. Commençons par les bases.
 
-![Logo Vagrant](lien-vers-votre-logo.png)
+![Logo Vagrant](https://i.imgur.com/W65dAcT.png)
 
 ### Qu'est-ce que Vagrant et quelles machines virtuelles peuvent être créées ?
 
