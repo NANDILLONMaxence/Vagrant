@@ -1,0 +1,66 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "gusztavvargadr/windows-server"  # Change the box to Windows Server 2022
+  config.vm.communicator = "winrm"
+  
+  config.vm.provider :virtualbox do |vb|
+    vb.gui = true
+    vb.memory = "5048"
+    vb.cpus = 2
+  end
+
+  # Machine WindowsServerVM
+  config.vm.define "windowsServerVM" do |windowsServerVM|  # Change the machine name to windowsServerVM
+    windowsServerVM.vm.hostname = "WindowsServerVM"
+    windowsServerVM.vm.network "forwarded_port", guest: 3389, host: 13389, auto_correct: true  # Change the host port to 13389
+    windowsServerVM.vm.network "private_network", ip: "192.168.60.10"
+
+    # Config vm
+    windowsServerVM.vm.provision "shell", inline: <<-SHELL
+      # Set language to French
+      Set-WinSystemLocale fr-FR
+
+      # Set keyboard layout to French (AZERTY)
+      Set-WinUserLanguageList -LanguageList fr-FR -Force
+
+      # Set time zone to Paris
+      tzutil /s "Romance Standard Time"
+
+      # Enable Remote Desktop
+      Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
+      
+      # Download Firefox installer (French version)
+      Invoke-WebRequest -Uri "https://download.mozilla.org/?product=firefox-latest-ssl&os=win64&lang=fr" -OutFile "C:\FirefoxSetup.exe"
+
+      # Install Firefox silently
+      Start-Process -FilePath "C:\FirefoxSetup.exe" -ArgumentList "/S" -Wait
+
+      # Disable Internet Explorer Enhanced Security Configuration
+      Disable-WindowsOptionalFeature -Online -FeatureName "IE-ESC"
+
+      # Allow ICMP traffic (ping)
+      New-NetFirewallRule -DisplayName "Allow ICMPv4" -Protocol ICMPv4 -Enabled True
+
+      # Enable Administrator account and set password
+      net user Administrator /active:yes
+      net user Administrator "adminPassword123!"
+
+      # Automatically log in with Administrator on startup
+      reg add "HKLM\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon" /v AutoAdminLogon /t REG_SZ /d 1 /f
+      reg add "HKLM\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon" /v DefaultUserName /t REG_SZ /d Administrator /f
+      reg add "HKLM\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon" /v DefaultPassword /t REG_SZ /d adminPassword123! /f
+    SHELL
+  end
+  config.vm.post_up_message = <<-MESSAGE
+   WindowsServerVM
+   Utilisateur : Administrator - Mot de passe : adminPassword123!
+   Utilisateur : vagrant - Mot de passe : vagrant
+ 
+   Remote Desktop
+   Adresse : localhost:3389
+
+   Note: Remote Desktop might take a few moments to be accessible after the VM starts.
+  MESSAGE
+end

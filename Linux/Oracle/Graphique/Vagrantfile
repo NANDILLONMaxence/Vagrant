@@ -1,0 +1,66 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "bento/oracle-8"  # Change the box to Oracle Linux 8 from bento
+  config.vm.provider :virtualbox do |vb|
+    vb.gui = true  # Active l'interface graphique pour Cinnamon
+    vb.memory = "2048"
+    vb.cpus = 2
+  end
+
+  # Machine OracleVM
+  config.vm.define "oracleVM" do |oracleVM|  # Change the machine name to oracleVM
+    oracleVM.vm.hostname = "OracleVM"
+    oracleVM.vm.network "private_network", ip: "192.168.60.10"
+
+    # Config vm
+    oracleVM.vm.provision "shell", inline: <<-SHELL
+      # Update package repositories
+      yum update -y
+
+      # Install openssh-server
+      yum install -y openssh-server
+
+      # Add user
+      useradd -m -p $(openssl passwd -1 max) root-max
+      usermod -aG wheel root-max
+
+      # Enable password authentication for SSH
+      sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
+
+      systemctl restart sshd
+      systemctl enable sshd
+      systemctl start sshd
+
+      # Install Cinnamon desktop environment
+      yum install -y epel-release
+      yum groupinstall -y "Cinnamon Desktop"
+
+      # Set keyboard layout to AZERTY
+      localectl set-keymap fr
+
+      # Install Firefox
+      yum install -y firefox
+
+      # Install Terminal
+      yum install -y gnome-terminal
+
+      # Set system language to French
+      localectl set-locale LANG=fr_FR.utf8
+
+      # Start Cinnamon on login
+      echo "exec /usr/bin/cinnamon-session" >> /home/root-max/.xinitrc
+    SHELL
+  end
+  config.vm.post_up_message = <<-MESSAGE
+   OracleVM avec Cinnamon, Firefox, Terminal en français et AZERTY
+   Utilisateur : root-max - Mot de passe : max
+   Utilisateur : vagrant - Mot de passe : aucun
+ 
+   Pour accéder à l'interface graphique Cinnamon, utilisez une application cliente VNC avec les paramètres suivants:
+   Adresse: 127.0.0.1
+   Port: 5901
+   Mot de passe: max
+  MESSAGE
+end

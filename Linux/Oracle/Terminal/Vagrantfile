@@ -1,0 +1,47 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "bento/oracle-8"  # Change the box to Oracle Linux 8 from bento
+  config.vm.provider :virtualbox do |vb|
+    vb.gui = false
+    vb.memory = "2048"
+    vb.cpus = 2
+  end
+
+  # Machine OracleVM
+  config.vm.define "oracleVM" do |oracleVM|  # Change the machine name to oracleVM
+    oracleVM.vm.hostname = "OracleVM"
+    oracleVM.vm.network "private_network", ip: "192.168.60.10"
+
+    # Config vm
+    oracleVM.vm.provision "shell", inline: <<-SHELL
+      # Update package repositories
+      yum update -y
+
+      # Install openssh-server
+      yum install -y openssh-server
+
+      # Add user
+      useradd -m -p $(openssl passwd -1 max) root-max
+      usermod -aG wheel root-max
+
+      # Enable password authentication for SSH
+      sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
+
+      systemctl restart sshd
+      systemctl enable sshd
+      systemctl start sshd
+    SHELL
+  end
+  config.vm.post_up_message = <<-MESSAGE
+   OracleVM
+   Utilisateur : root-max - Mot de passe : max
+   Utilisateur : vagrant - Mot de passe : aucun
+ 
+   SSH
+   vagrant ssh oracleVM
+   ssh root-max@127.0.0.1 -p 2222
+   ssh root-max@192.168.60.10
+  MESSAGE
+end

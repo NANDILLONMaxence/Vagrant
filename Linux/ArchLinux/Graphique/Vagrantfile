@@ -1,0 +1,43 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "archlinux/archlinux"
+  config.vm.provider :virtualbox do |vb|
+    vb.gui = true
+    vb.memory = "2048"
+    vb.cpus = 2
+  end
+
+  config.vm.define "archLinuxCinnamon" do |archLinuxCinnamon|
+    archLinuxCinnamon.vm.hostname = "ArchLinuxCinnamon"
+    archLinuxCinnamon.vm.network "private_network", ip: "192.168.60.10"
+
+    archLinuxCinnamon.vm.provision "shell", inline: <<-SHELL
+      pacman -Syu --noconfirm
+      pacman -S --noconfirm xorg-server cinnamon lightdm lightdm-gtk-greeter xorg-xinit gnome-terminal firefox
+
+      useradd -m -g users -s /bin/bash root-max
+      echo "root-max:max" | chpasswd
+      echo 'root-max ALL=(ALL) ALL' >> /etc/sudoers
+
+      sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config
+
+      systemctl enable lightdm
+      systemctl start lightdm
+    SHELL
+  end
+  config.vm.post_up_message = <<-MESSAGE
+   ArchLinuxCinnamon
+   Utilisateur : root-max - Mot de passe : max
+   Utilisateur : vagrant - Mot de passe : aucun
+ 
+   Accès graphique via LightDM
+   Utilisateur : root-max - Mot de passe : max
+
+   SSH
+   vagrant ssh archLinuxCinnamon
+   ssh root-max@127.0.0.1 -p 2222
+   ssh root-max@192.168.60.10
+  MESSAGE
+end

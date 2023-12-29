@@ -1,0 +1,44 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "aaronvonawesome/linux-mint-20-cinnamon"  # Change the box to Linux Mint Cinnamon64
+  config.vm.provider :virtualbox do |vb|
+    vb.gui = false
+    vb.memory = "2048"
+    vb.cpus = 2
+  end
+
+  # Machine LinuxMintVM
+  config.vm.define "linuxMintVM" do |linuxMintVM|  # Change the machine name to linuxMintVM
+    linuxMintVM.vm.hostname = "LinuxMintVM"
+    linuxMintVM.vm.network "private_network", ip: "192.168.60.10"
+
+    # Config vm
+    linuxMintVM.vm.provision "shell", inline: <<-SHELL
+      apt-get update
+      apt-get install -y openssh-server
+
+      # Add user
+      adduser --gecos "" root-max
+      echo "root-max:max" | chpasswd
+      usermod -aG sudo root-max
+
+      # Enable password authentication for SSH
+      sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
+
+      systemctl restart ssh
+      systemctl enable ssh
+    SHELL
+  end
+  config.vm.post_up_message = <<-MESSAGE
+   LinuxMintVM
+   Utilisateur : root-max - Mot de passe : max
+   Utilisateur : vagrant - Mot de passe : aucun
+ 
+   SSH
+   vagrant ssh linuxMintVM
+   ssh root-max@127.0.0.1 -p 2222
+   ssh root-max@192.168.60.10
+  MESSAGE
+end

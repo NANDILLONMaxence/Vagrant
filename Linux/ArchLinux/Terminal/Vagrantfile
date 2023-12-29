@@ -1,0 +1,44 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "archlinux/archlinux"  # Change the box to Arch Linux
+  config.vm.provider :virtualbox do |vb|
+    vb.gui = false
+    vb.memory = "2048"
+    vb.cpus = 2
+  end
+
+  # Machine ArchLinuxVM
+  config.vm.define "archLinuxVM" do |archLinuxVM|  # Change the machine name to archLinuxVM
+    archLinuxVM.vm.hostname = "ArchLinuxVM"
+    archLinuxVM.vm.network "private_network", ip: "192.168.60.10"
+
+    # Config vm
+    archLinuxVM.vm.provision "shell", inline: <<-SHELL
+      pacman -Syu --noconfirm
+      pacman -S --noconfirm openssh
+
+      # Add user
+      useradd -m -g users -s /bin/bash root-max
+      echo "root-max:max" | chpasswd
+      echo 'root-max ALL=(ALL) ALL' >> /etc/sudoers
+
+      # Enable password authentication for SSH
+      sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config
+
+      systemctl restart sshd
+      systemctl enable sshd
+    SHELL
+  end
+  config.vm.post_up_message = <<-MESSAGE
+   ArchLinuxVM
+   Utilisateur : root-max - Mot de passe : max
+   Utilisateur : vagrant - Mot de passe : aucun
+ 
+   SSH
+   vagrant ssh archLinuxVM
+   ssh root-max@127.0.0.1 -p 2222
+   ssh root-max@192.168.60.10
+  MESSAGE
+end

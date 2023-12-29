@@ -1,0 +1,34 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "gusztavvargadr/windows-10"  # Use a Windows 10 box
+  config.vm.communicator = "winrm"  # Use WinRM as the communicator
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.gui = true  # Show GUI
+    vb.memory = "2048"
+    vb.cpus = 2
+  end
+
+  # Machine WindowsVM
+  config.vm.define "windowsVM" do |windowsVM|
+    # Config vm
+    windowsVM.vm.provision "shell", inline: <<-SHELL
+      # Install Firefox
+      choco install -y firefox
+
+      # Disable Windows Firewall for testing purposes
+      Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False
+    SHELL
+  end
+
+  config.vm.post_up_message = <<-MESSAGE
+   WindowsVM
+   Utilisateur : vagrant - Mot de passe : vagrant
+ 
+   RDP
+   Adresse IP : 127.0.0.1:3389
+   Mot de passe : vagrant
+  MESSAGE
+end

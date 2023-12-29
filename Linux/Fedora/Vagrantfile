@@ -1,0 +1,40 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "generic/fedora34"  # Remplacez par le nom correct de votre box Fedora
+
+  config.vm.provider :virtualbox do |vb|
+    vb.gui = false
+    vb.memory = "2048"
+    vb.cpus = 2
+  end
+
+  config.vm.define "fedoraVM" do |fedoraVM|
+    fedoraVM.vm.hostname = "FedoraVM"
+    fedoraVM.vm.network "private_network", type: "dhcp"
+
+    # Provisioning script for Fedora with Cinnamon desktop
+    fedoraVM.vm.provision "shell", inline: <<-SHELL
+      # Mise à jour du système
+      dnf update -y
+
+      # Installation de l'environnement de bureau Cinnamon
+      dnf groupinstall -y cinnamon
+
+      # Installation de Firefox et d'un terminal
+      dnf install -y firefox gnome-terminal
+
+      # Configuration du clavier en AZERTY
+      localectl set-keymap fr
+
+      # Redémarrage de la machine après les modifications
+      reboot
+    SHELL
+  end
+
+  config.vm.post_up_message = <<-MESSAGE
+    FedoraVM prêt à l'emploi avec l'environnement de bureau Cinnamon!
+    SSH : vagrant ssh fedoraVM
+  MESSAGE
+end
