@@ -23,7 +23,6 @@ Vagrant.configure("2") do |config|
       # Script d'installation et de configuration
       server.vm.provision "shell", inline: <<-SHELL
          # Mise a jour & install packets
-         echo 'deb http://deb.debian.org/debian/ bullseye-backports main' >> /etc/apt/sources.list
          apt update
          apt upgrade -y
          apt install -y openssh-server apache2 bind9
@@ -198,7 +197,6 @@ Vagrant.configure("2") do |config|
       # Script d'installation et de configuration
       client.vm.provision "shell", inline: <<-SHELL
          # Mise a jour & install packets
-         echo 'deb http://deb.debian.org/debian/ bullseye-backports main' >> /etc/apt/sources.list
          apt update
          apt upgrade -y
          apt install -y gnome openssh-client
