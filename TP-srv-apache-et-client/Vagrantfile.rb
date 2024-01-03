@@ -22,8 +22,6 @@ Vagrant.configure("2") do |config|
 
       # Script d'installation et de configuration
       server.vm.provision "shell", inline: <<-SHELL
-         # Plugin VirtualBox Guest Additions
-         /sbin/rcvboxadd quicksetup all
          # Mise a jour & install packets
          echo 'deb http://deb.debian.org/debian/ bullseye-backports main' >> /etc/apt/sources.list
          apt update
@@ -199,9 +197,6 @@ Vagrant.configure("2") do |config|
 
       # Script d'installation et de configuration
       client.vm.provision "shell", inline: <<-SHELL
-         # Plugin VirtualBox Guest Additions
-         /sbin/rcvboxadd quicksetup all
-
          # Mise a jour & install packets
          echo 'deb http://deb.debian.org/debian/ bullseye-backports main' >> /etc/apt/sources.list
          apt update
