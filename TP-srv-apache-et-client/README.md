@@ -52,7 +52,8 @@ But : Le fichier VagrantFile permet de déployer deux machines virtuelles, l'une
 **Note**
 - Si l'interface GNOME ne se lance pas automatiquement, connectez-vous et exécutez `gdm` dans le terminal.
 - Si vous avez une "erreur" du type Building the VirtualBox Guest Additions kernel ...
-  * Relancer manuellement la machine et refaite un vagrant up 
+  * Votre version doit être trop élevée, voir l'erreur et la version souhaiter.
+  * Exemple : [Lien Forum Hashicorp](https://discuss.hashicorp.com/t/virtualbox-guest-additions-installation-hanging-on-vagrant-2-3-7-virtualbox-7-0-8/55340/2)
 - Pensé à supprimer les clés similaires dans le fichier ~/.ssh/known_host.
 
 Pour plus d'informations sur la configuration des services et les détails des scripts d'installation, consultez le fichier Vagrantfile.
