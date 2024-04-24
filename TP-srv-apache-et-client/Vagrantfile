@@ -154,7 +154,7 @@ Vagrant.configure("2") do |config|
          echo "root-max:max" | chpasswd
          usermod -aG sudo root-max
 
-         # Utilisateur vienney
+         # Utilisateur vienne
          adduser --gecos "" vienne
          echo "vienne:Vienne36!" | chpasswd
          # Ajout des droits de modification sur la page html
