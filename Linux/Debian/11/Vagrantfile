@@ -11,13 +11,13 @@ Vagrant.configure("2") do |config|
     vb.cpus = 2
   end
 
-  # Machine Debian12
-  config.vm.define "debian12" do |debian12|
-    debian12.vm.hostname = "Debian12"
-    debian12.vm.network "private_network", ip: "192.168.60.10"
+  # Machine Debian11
+  config.vm.define "debian11" do |debian11|
+    debian11.vm.hostname = "Debian11"
+    debian11.vm.network "private_network", ip: "192.168.60.10"
 
     # Config vm
-    debian12.vm.provision "shell", inline: <<-SHELL
+    debian11.vm.provision "shell", inline: <<-SHELL
      # echo 'deb http://deb.debian.org/debian/ bullseye-backports main' >> /etc/apt/sources.list     
       apt-get update
       apt-get install -y openssh-server
@@ -42,12 +42,12 @@ Vagrant.configure("2") do |config|
     SHELL
   end
   config.vm.post_up_message = <<-MESSAGE
-   debian12
+   debian11
    Utilisateur : root-max - Mot de passe : max
    Utilisateur : vagrant - Mot de passe : aucun
  
    SSH
-   vagrant ssh debian12
+   vagrant ssh debian11
    ssh root-max@127.0.0.1 -p 2222
    ssh root-max@192.168.60.10
   MESSAGE
