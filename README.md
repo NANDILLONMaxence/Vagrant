@@ -1,4 +1,3 @@
-
 ## Bienvenue dans le Repository Vagrant Multiplateforme
 
 En tant qu'étudiant, je suis souvent confronté à la mise en place de nombreuses solutions informatiques, que ce soit pour du développement ou la configuration de services réseau. Dans ma quête de méthodes rapides pour réaliser mes TP, j'ai découvert Vagrant. Cet outil permet de déployer rapidement des machines virtuelles, que ce soit avec Ubuntu, Debian, ou d'autres systèmes d'exploitation Linux. Commençons par les bases.
@@ -13,7 +12,53 @@ Vagrant est un outil open-source conçu pour créer et gérer des environnements
 
 Pour commencer, téléchargez la dernière version de Vagrant depuis [le site officiel](https://www.vagrantup.com/downloads). Une fois téléchargé, exécutez le fichier d'installation et suivez les instructions à l'écran.
 
-### Comment créer des machines virtuelles avec Vagrant (Ubuntu) ?
+Ensuite viens l'installation des plugins Vagrant, en fonctions du fournisseur que vous utilisez.
+Par exemple, si vous utilisez VirtualBox, installez les plugins VirtualBox associés avec les commandes suivantes :
+
+#### Plugin VirtualBox
+
+Plugin essentiel :
+
+> **Note :** Le plugin `vagrant-vbguest` permet de maintenir automatiquement à jour les *Guest Additions* de VirtualBox sur la machine virtuelle. Cela assure une compatibilité optimale entre la VM et l'hôte, en particulier pour la synchronisation des dossiers partagés.
+
+```bash
+vagrant plugin install vagrant-vbguest
+```
+
+Plugin opcionnel :
+
+```bash
+vagrant plugin install vagrant-share
+vagrant plugin install vagrant-hostmanager
+vagrant plugin install vagrant-cachier
+```
+
+#### Plugin VMware Workstation
+
+Plugin essentiel :
+
+> **Note :** Le plugin `vagrant-vmware-desktop` permet de maintenir automatiquement à jour les *Guest Additions* de VMware sur la machine virtuelle. Cela assure une compatibilité optimale entre la VM et l'hôte, en particulier pour la synchronisation des dossiers partagés.
+
+```bash
+vagrant plugin install vagrant-vmware-desktop
+```
+
+Plugin opcionnel :
+
+```bash
+vagrant plugin install vagrant-share
+vagrant plugin install vagrant-reload
+```
+
+#### Vérification des plugins installés
+
+Pour confirmer que les plugins ont été correctement installés :
+
+```bash
+vagrant plugin list
+```
+
+### Comment créer des machines virtuelles avec Vagrant (ex Ubuntu) ?
 
 Une fois Vagrant installé, suivez ces étapes simples :
 
@@ -38,6 +83,7 @@ Une fois Vagrant installé, suivez ces étapes simples :
 ### Comment gérer les machines virtuelles avec Vagrant ?
 
 Utilisez les commandes suivantes pour gérer vos machines virtuelles :
+
 - `vagrant up`: démarrer la machine virtuelle.
 - `vagrant halt`: arrêter la machine virtuelle.
 - `vagrant reload`: redémarrer la machine virtuelle.
@@ -55,6 +101,7 @@ Pour automatiser des machines virtuelles, voici un exemple de script Ruby pour l
 #### Présentation de l'arborescence des fichiers
 
 Organisez vos scripts VagrantFile dans un dossier unique par projet :
+
 ```
 |- All_VM
   |- Vagrant_VM_Nom_du-projet
@@ -89,7 +136,6 @@ SHELL
 
 Personnalisez les configurations en fonction de vos besoins. Utilisez ce modèle pour créer des machines virtuelles automatisées avec Vagrant.
 
-
 ## Mise en Place de Boxes et Création d'une Box à Partir d'une VM
 
 ### Qu'est-ce qu'une Box Vagrant ?
@@ -100,17 +146,18 @@ Une "box" Vagrant est une archive compressée qui contient une image de machine 
 
 1. **Ajouter une Box :**
    Pour utiliser une box existante, ajoutez-la à votre projet avec la commande :
+
    ```bash
    vagrant box add nom-de-la-box chemin/vers/la-box-file
    ```
-
 2. **Configurer Votre Projet avec la Nouvelle Box :**
    Modifiez le fichier `Vagrantfile` dans votre projet pour utiliser la nouvelle box :
+
    ```ruby
    config.vm.box = "nom-de-la-box"
    ```
-
 3. **Lancer la Machine Virtuelle :**
+
    ```bash
    vagrant up
    ```
@@ -118,33 +165,34 @@ Une "box" Vagrant est une archive compressée qui contient une image de machine 
 ### Création d'une Box à Partir d'une VM
 
 1. **Préparer la VM :**
+
    - Assurez-vous que la VM est configurée comme vous le souhaitez.
    - Supprimez les données sensibles ou inutiles de la VM.
-
 2. **Arrêter la VM :**
+
    ```bash
    vagrant halt
    ```
-
 3. **Packager la VM en tant que Box :**
+
    ```bash
    vagrant package --output nom-de-la-box.box
    ```
 
    Cette commande crée une box à partir de la VM actuelle et la stocke dans le fichier `nom-de-la-box.box`.
-
 4. **Ajouter la Nouvelle Box à Vagrant :**
+
    ```bash
    vagrant box add nom-de-la-box nom-de-la-box.box
    ```
-
 5. **Configurer Votre Projet avec la Nouvelle Box :**
    Modifiez le fichier `Vagrantfile` dans votre projet pour utiliser la nouvelle box :
+
    ```ruby
    config.vm.box = "nom-de-la-box"
    ```
-
 6. **Lancer la Machine Virtuelle :**
+
    ```bash
    vagrant up
    ```
@@ -152,11 +200,12 @@ Une "box" Vagrant est une archive compressée qui contient une image de machine 
 ### Gestion des Boxes
 
 - **Lister les Boxes Installées :**
+
   ```bash
   vagrant box list
   ```
-
 - **Supprimer une Box :**
+
   ```bash
   vagrant box remove nom-de-la-box
   ```
@@ -166,7 +215,6 @@ Une "box" Vagrant est une archive compressée qui contient une image de machine 
 - Créez des boxes légères en supprimant les données inutiles avant de les empaqueter.
 - Documentez votre box en spécifiant les configurations et les prérequis dans le `README`.
 
-
 ## Personnalisation Avancée et Gestion des Boxes (Suite)
 
 ### Personnalisation Avancée des Boxes
@@ -175,15 +223,16 @@ Une "box" Vagrant est une archive compressée qui contient une image de machine 
 
 - **Configurer les Ressources de la VM :**
   Ajoutez ces lignes dans le `Vagrantfile` pour spécifier la mémoire et le nombre de CPU :
+
   ```ruby
   config.vm.provider "virtualbox" do |vb|
     vb.memory = "2048"
     vb.cpus = 2
   end
   ```
-
 - **Ajouter des Scripts de Provisionnement :**
   Utilisez des scripts pour installer des logiciels, configurer des services, etc. :
+
   ```ruby
   config.vm.provision "shell", path: "script.sh"
   ```
@@ -192,13 +241,13 @@ Une "box" Vagrant est une archive compressée qui contient une image de machine 
 
 1. **Créer un Compte Vagrant Cloud :**
    [Vagrant Cloud](https://app.vagrantup.com) est une plateforme pour partager des boxes Vagrant.
-   
 2. **Se Connecter avec Votre Compte Vagrant Cloud :**
+
    ```bash
    vagrant login
    ```
-
 3. **Publier la Box sur Vagrant Cloud :**
+
    ```bash
    vagrant cloud publish utilisateur/nom-de-la-box version \
      virtualbox --force --release
@@ -207,17 +256,18 @@ Une "box" Vagrant est une archive compressée qui contient une image de machine 
 ### Mise à Jour de Vos Boxes
 
 1. **Mettre à Jour la VM et Arrêter :**
+
    ```bash
    vagrant up
    vagrant halt
    ```
-
 2. **Repackager la VM Mise à Jour :**
+
    ```bash
    vagrant package --output nom-de-la-box-v2.box
    ```
-
 3. **Mettre à Jour la Box :**
+
    ```bash
    vagrant box add nom-de-la-box-v2 nom-de-la-box-v2.box --force
    ```
